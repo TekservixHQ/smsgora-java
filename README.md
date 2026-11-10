@@ -1,6 +1,6 @@
 # SMS Gora Java / Kotlin client
 
-[![](https://jitpack.io/v/ellyj164/smsgora-java.svg)](https://jitpack.io/#ellyj164/smsgora-java)
+[![](https://jitpack.io/v/tekservixhq/smsgora-java.svg)](https://jitpack.io/#tekservixhq/smsgora-java)
 
 Java and Kotlin client for the [SMS Gora SMS Gateway](https://tekservix.com/smsgora/) API.
 
@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.ellyj164:smsgora-java:v1.0.0")
+    implementation("com.github.tekservixhq:smsgora-java:v1.0.1")
 }
 ```
 
@@ -36,7 +36,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.ellyj164:smsgora-java:v1.0.0'
+    implementation 'com.github.tekservixhq:smsgora-java:v1.0.1'
 }
 ```
 
@@ -51,9 +51,9 @@ dependencies {
 </repositories>
 
 <dependency>
-  <groupId>com.github.ellyj164</groupId>
+  <groupId>com.github.tekservixhq</groupId>
   <artifactId>smsgora-java</artifactId>
-  <version>v1.0.0</version>
+  <version>v1.0.1</version>
 </dependency>
 ```
 
@@ -160,10 +160,10 @@ SMS Gora accepts TextBee-style requests, so most integrations switch by changing
 
 ## More from Tekservix
 
-- [WAservix WhatsApp API Gateway](https://tekservix.com/waservix/): send WhatsApp messages from your own number ([waservix-java](https://github.com/ellyj164/waservix-java))
+- [WAservix WhatsApp API Gateway](https://tekservix.com/waservix/): send WhatsApp messages from your own number ([waservix-java](https://github.com/tekservixhq/waservix-java))
 - [AI Sales Agent](https://tekservix.com/ai-sales-agent): answers customers on WhatsApp and SMS using your website's content
 - [Website to App](https://tekservix.com/mobile-apps): turn your website into Android and iOS apps
-- SMS Gora is also available for Node.js (`npm install smsgora`), Python (`pip install smsgora`), PHP (`composer require tekservix/smsgora`) and Go (`go get github.com/ellyj164/smsgora-go`)
+- SMS Gora is also available for Node.js (`npm install smsgora`), Python (`pip install smsgora`), PHP (`composer require tekservix/smsgora`) and Go (`go get github.com/tekservixhq/smsgora-go`)
 
 ## License
 

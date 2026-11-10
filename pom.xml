@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.ellyj164</groupId>
+  <groupId>com.github.tekservixhq</groupId>
   <artifactId>smsgora-java</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
 
   <name>SMS Gora Java client</name>
@@ -24,7 +24,7 @@
     <url>https://tekservix.com</url>
   </organization>
   <scm>
-    <url>https://github.com/ellyj164/smsgora-java</url>
+    <url>https://github.com/tekservixhq/smsgora-java</url>
   </scm>
 
   <properties>
