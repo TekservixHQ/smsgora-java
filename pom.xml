@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.tekservixhq</groupId>
-  <artifactId>smsgora-java</artifactId>
-  <version>1.0.1</version>
+  <groupId>com.tekservix</groupId>
+  <artifactId>smsgora</artifactId>
+  <version>1.0.2</version>
   <packaging>jar</packaging>
 
-  <name>SMS Gora Java client</name>
-  <description>Official Java/Kotlin client for the SMS Gora SMS Gateway API: send and receive SMS through your own Android phones, with delivery reports and signed webhooks.</description>
+  <name>SMS Gora SMS Gateway Java client</name>
+  <description>SMS Gora SMS Gateway: official Java and Kotlin client by Tekservix. Send and receive SMS through your own Android phones, with delivery reports and signed webhooks.</description>
   <url>https://tekservix.com/smsgora/</url>
 
   <licenses>
@@ -23,9 +23,23 @@
     <name>Tekservix</name>
     <url>https://tekservix.com</url>
   </organization>
+  <developers>
+    <developer>
+      <name>Tekservix</name>
+      <email>support@tekservix.com</email>
+      <organization>Tekservix</organization>
+      <organizationUrl>https://tekservix.com</organizationUrl>
+    </developer>
+  </developers>
   <scm>
-    <url>https://github.com/tekservixhq/smsgora-java</url>
+    <connection>scm:git:https://github.com/TekservixHQ/smsgora-java.git</connection>
+    <developerConnection>scm:git:https://github.com/TekservixHQ/smsgora-java.git</developerConnection>
+    <url>https://github.com/TekservixHQ/smsgora-java</url>
   </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/TekservixHQ/smsgora-java/issues</url>
+  </issueManagement>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -60,6 +74,61 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.11.2</version>
+        <configuration>
+          <doclint>none</doclint>
+          <quiet>true</quiet>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!-- mvn -P release deploy: signs and uploads to Maven Central (used by .github/workflows/publish.yml) -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.7</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.7.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+              <waitUntil>published</waitUntil>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

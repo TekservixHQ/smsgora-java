@@ -12,6 +12,26 @@ SMS Gora turns Android phones with ordinary SIM cards into an SMS gateway. Your 
 - One small dependency (Gson)
 - Webhook signature check built in
 
+## Maven Central
+
+Gradle (Kotlin DSL):
+
+```kotlin
+implementation("com.tekservix:smsgora:1.0.2")
+```
+
+Maven:
+
+```xml
+<dependency>
+  <groupId>com.tekservix</groupId>
+  <artifactId>smsgora</artifactId>
+  <version>1.0.2</version>
+</dependency>
+```
+
+The JitPack coordinates below keep working.
+
 ## Install
 
 Add the JitPack repository, then the dependency.

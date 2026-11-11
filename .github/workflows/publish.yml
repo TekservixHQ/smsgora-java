@@ -1,0 +1,32 @@
+# Signs and publishes to Maven Central (com.tekservix) when a version tag (v1.2.3) is pushed.
+# Secrets: CENTRAL_TOKEN_USERNAME, CENTRAL_TOKEN_PASSWORD (Central Portal user token), GPG_PRIVATE_KEY, GPG_PASSPHRASE.
+name: publish
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_TOKEN_USERNAME
+          server-password: CENTRAL_TOKEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+      - name: Check tag matches the pom version
+        run: |
+          v=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)
+          test "v$v" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME != pom $v"; exit 1; }
+      - run: mvn -B -P release deploy
+        env:
+          CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          CENTRAL_TOKEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
