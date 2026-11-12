@@ -1,11 +1,12 @@
 # Signs and publishes to Maven Central (com.tekservix) when a version tag (v1.2.3) is pushed.
+# Builds the upload bundle by hand (only the signed artifacts + checksums) and sends it to the
+# Central Portal API, because Maven 3.9 adds bookkeeping files to the plugin's bundle that Central rejects.
 # Secrets: CENTRAL_TOKEN_USERNAME, CENTRAL_TOKEN_PASSWORD (Central Portal user token), GPG_PRIVATE_KEY, GPG_PASSPHRASE.
 name: publish
 
 on:
   push:
     tags: ['v*.*.*']
-  workflow_dispatch:
 
 jobs:
   publish:
@@ -17,24 +18,42 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-          server-id: central
-          server-username: CENTRAL_TOKEN_USERNAME
-          server-password: CENTRAL_TOKEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
-      - name: Check tag matches the pom version
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Read coordinates and check the tag
+        id: coords
         run: |
           v=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)
+          a=$(mvn -B -q help:evaluate -Dexpression=project.artifactId -DforceStdout)
+          g=$(mvn -B -q help:evaluate -Dexpression=project.groupId -DforceStdout)
           test "v$v" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME != pom $v"; exit 1; }
-      - run: mvn -B -P release deploy
+          echo "v=$v" >> "$GITHUB_OUTPUT"; echo "a=$a" >> "$GITHUB_OUTPUT"; echo "g=$g" >> "$GITHUB_OUTPUT"
+      - name: Build, test and sign
+        run: mvn -B -P release verify
         env:
-          CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
-          CENTRAL_TOKEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      - name: Show bundle contents
-        if: always()
+      - name: Make the bundle
         run: |
-          find target/central-staging -type f | sort || true
-          ls -la target/central-publishing || true
-          unzip -l target/central-publishing/*.zip || true
+          V=${{ steps.coords.outputs.v }}; A=${{ steps.coords.outputs.a }}; G=${{ steps.coords.outputs.g }}
+          D=bundle/${G//.//}/$A/$V; mkdir -p "$D"
+          cp pom.xml "$D/$A-$V.pom"
+          cp target/$A-$V.pom.asc target/$A-$V.jar target/$A-$V.jar.asc \
+             target/$A-$V-sources.jar target/$A-$V-sources.jar.asc \
+             target/$A-$V-javadoc.jar target/$A-$V-javadoc.jar.asc "$D/"
+          for f in "$D"/*; do case "$f" in *.asc) continue;; esac; md5sum "$f" | cut -d' ' -f1 > "$f.md5"; sha1sum "$f" | cut -d' ' -f1 > "$f.sha1"; done
+          (cd bundle && zip -qr ../bundle.zip .) && unzip -l bundle.zip
+      - name: Upload to Maven Central and wait until published
+        env:
+          U: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          P: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+        run: |
+          AUTH="Authorization: Bearer $(printf '%s:%s' "$U" "$P" | base64 -w0)"
+          id=$(curl -sf -X POST -H "$AUTH" -F bundle=@bundle.zip "https://central.sonatype.com/api/v1/publisher/upload?name=${{ steps.coords.outputs.a }}-${{ steps.coords.outputs.v }}&publishingType=AUTOMATIC")
+          echo "deployment $id"
+          for i in $(seq 1 60); do
+            s=$(curl -sf -X POST -H "$AUTH" "https://central.sonatype.com/api/v1/publisher/status?id=$id")
+            st=$(echo "$s" | jq -r .deploymentState); echo "$st"
+            case "$st" in PUBLISHED) exit 0;; FAILED) echo "$s" | jq .; exit 1;; esac
+            sleep 20
+          done
+          echo "still not published after 20 minutes (it may finish later): $s"; exit 1
