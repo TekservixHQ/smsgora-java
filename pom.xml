@@ -6,7 +6,7 @@
 
   <groupId>com.tekservix</groupId>
   <artifactId>smsgora</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <packaging>jar</packaging>
 
   <name>SMS Gora SMS Gateway Java client</name>
