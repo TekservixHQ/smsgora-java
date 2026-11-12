@@ -17,7 +17,7 @@ SMS Gora turns Android phones with ordinary SIM cards into an SMS gateway. Your 
 Gradle (Kotlin DSL):
 
 ```kotlin
-implementation("com.tekservix:smsgora:1.0.2")
+implementation("com.tekservix:smsgora:1.0.3")
 ```
 
 Maven:
@@ -26,7 +26,7 @@ Maven:
 <dependency>
   <groupId>com.tekservix</groupId>
   <artifactId>smsgora</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 

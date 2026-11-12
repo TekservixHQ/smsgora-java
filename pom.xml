@@ -6,7 +6,7 @@
 
   <groupId>com.tekservix</groupId>
   <artifactId>smsgora</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>jar</packaging>
 
   <name>SMS Gora SMS Gateway Java client</name>
@@ -119,7 +119,7 @@
           <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>0.7.0</version>
+            <version>0.10.0</version>
             <extensions>true</extensions>
             <configuration>
               <publishingServerId>central</publishingServerId>
