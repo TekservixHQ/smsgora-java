@@ -5,6 +5,7 @@ name: publish
 on:
   push:
     tags: ['v*.*.*']
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -22,6 +23,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
       - name: Check tag matches the pom version
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
           v=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)
           test "v$v" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME != pom $v"; exit 1; }
@@ -30,3 +32,9 @@ jobs:
           CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
           CENTRAL_TOKEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Show bundle contents
+        if: always()
+        run: |
+          find target/central-staging -type f | sort || true
+          ls -la target/central-publishing || true
+          unzip -l target/central-publishing/*.zip || true
